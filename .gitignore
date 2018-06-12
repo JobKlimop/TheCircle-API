@@ -11,3 +11,4 @@ media/live/android/chunk-stream0-00012.m4s
 *.m3u8
 *.mpd
 *.ts
+.idea/workspace.xml
