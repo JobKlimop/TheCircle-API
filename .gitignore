@@ -3,3 +3,6 @@ README.md
 
 # Ignore
 node_modules/
+
+# Ignore media chunks
+media/
