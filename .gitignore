@@ -4,3 +4,10 @@ README.md
 # Ignore
 node_modules/
 media/
+.idea/workspace.xml
+media/live/android/chunk-stream0-00012.m4s
+*.m4s
+*.m3u8
+*.m3u8
+*.mpd
+*.ts
