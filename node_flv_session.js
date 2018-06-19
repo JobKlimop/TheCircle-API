@@ -8,7 +8,8 @@ const AMF = require('./node_core_amf');
 const Logger = require('./logger');
 const context = require('./node_core_ctx');
 const NodeCoreUtils = require('./node_core_utils');
-
+const { StringDecoder } = require('string_decoder');
+const decoder = new StringDecoder('utf8');
 
 
 const FlvPacket = {
@@ -57,6 +58,7 @@ class NodeFlvSession {
   run() {
     let method = this.req.method;
     let urlInfo = URL.parse(this.req.url, true);
+    console.log(urlInfo);
     let streamPath = urlInfo.pathname.split('.')[0];
     this.connectCmdObj = { ip: this.ip, method, streamPath, query: urlInfo.query, };
     this.connectTime = new Date();
@@ -148,6 +150,7 @@ class NodeFlvSession {
     let FLVHeader = Buffer.from([0x46, 0x4C, 0x56, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00]);
     if (publisher.isFirstAudioReceived) {
       FLVHeader[4] |= 0b00000100;
+      // Logger.log(decoder.write(Buffer.from([0x46, 0x4C, 0x56, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x00])));
     }
 
     if (publisher.isFirstVideoReceived) {
@@ -190,6 +193,7 @@ class NodeFlvSession {
   }
 
   static createFlvTag(packet) {
+    // Logger.log(packet);
     let PreviousTagSize = 11 + packet.header.length;
     let tagBuffer = Buffer.alloc(PreviousTagSize + 4);
     tagBuffer[0] = packet.header.type;

@@ -107,7 +107,7 @@ class NodeRtmpSession {
     this.id = NodeCoreUtils.generateNewSessionID();
     this.ip = socket.remoteAddress;
     this.TAG = 'rtmp';
-    
+
     this.handshakePayload = Buffer.alloc(RTMP_HANDSHAKE_SIZE);
     this.handshakeState = RTMP_HANDSHAKE_UNINIT;
     this.handshakeBytes = 0;
@@ -309,6 +309,8 @@ class NodeRtmpSession {
     let chunkSize = this.outChunkSize;
     let chunksOffset = 0;
     let payloadOffset = 0;
+
+    // console.log({ header: header });
 
     let chunkBasicHeader = this.rtmpChunkBasicHeaderCreate(header.fmt, header.cid);
     let chunkBasicHeader3 = this.rtmpChunkBasicHeaderCreate(RTMP_CHUNK_TYPE_3, header.cid);
@@ -560,6 +562,9 @@ class NodeRtmpSession {
     }
     let payload = this.parserPacket.payload.slice(0, this.parserPacket.header.length);
 
+    // let hex = payload.toString('hex', 1, payload.length);
+    // console.log({ AUDIOPAYLOAD: hex });
+
     if (!this.isFirstAudioReceived) {
       let sound_format = payload[0];
       let sound_type = sound_format & 0x01;
@@ -608,7 +613,7 @@ class NodeRtmpSession {
     let rtmpChunks = this.rtmpChunksCreate(packet);
     let flvTag = NodeFlvSession.createFlvTag(packet);
 
-    //cache gop 
+	  //cache gop
     if (this.rtmpGopCacheQueue != null) {
       if (this.aacSequenceHeader != null && payload[1] === 0) {
         //skip aac sequence header
@@ -639,10 +644,13 @@ class NodeRtmpSession {
       return;
     }
     let payload = this.parserPacket.payload.slice(0, this.parserPacket.header.length);
-    // Logger.log(payload);
+    
     let frame_type = payload[0];
     let codec_id = frame_type & 0x0f;
     frame_type = (frame_type >> 4) & 0x0f;
+
+    // let hex = payload.toString('hex', 1, payload.length);
+    // console.log({ VIDEOPAYLOAD: hex });
 
     if (!this.isFirstVideoReceived) {
       this.videoCodec = codec_id;
@@ -681,8 +689,7 @@ class NodeRtmpSession {
     let rtmpChunks = this.rtmpChunksCreate(packet);
     let flvTag = NodeFlvSession.createFlvTag(packet);
 
-
-    //cache gop 
+	  //cache gop
     if ((codec_id == 7 || codec_id == 12) && this.rtmpGopCacheQueue != null) {
       if (frame_type == 1 && payload[1] == 1) {
         this.rtmpGopCacheQueue.clear();
@@ -720,7 +727,6 @@ class NodeRtmpSession {
     let offset = this.parserPacket.header.type === RTMP_TYPE_FLEX_STREAM ? 1 : 0;
     let payload = this.parserPacket.payload.slice(offset, this.parserPacket.header.length);
     let dataMessage = AMF.decodeAmf0Data(payload);
-    console.log({ rtmpDataHandler : dataMessage });
     switch (dataMessage.cmd) {
       case '@setDataFrame':
         if (dataMessage.dataObj) {

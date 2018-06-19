@@ -10,6 +10,7 @@ function getStreams(req, res, next) {
       if (regRes === null) return;
 
       let [app, stream] = _.slice(regRes, 1);
+      // console.log(app, stream);
 
       if (!_.get(stats, [app, stream])) {
         _.set(stats, [app, stream], {
@@ -109,5 +110,124 @@ function getStream(req, res, next) {
   res.json(streamStats);
 }
 
+function getEncryptedHash(req, res, next) {
+	console.log(req.body);
+
+	let stats = {};
+	let app = '';
+	let stream = '';
+
+	// let publishStreamPath = `/${req.params.app}/${req.params.stream}`;
+	// console.log(publishStreamPath);
+
+	let publishLive = req.params.app;
+	let publishStream = req.params.stream;
+
+	this.sessions.forEach(function (session, id) {
+		if (session.isStarting) {
+			let regRes = /\/(.*)\/(.*)/gi.exec(session.publishStreamPath || session.playStreamPath);
+
+			if (regRes === null) return;
+
+			[app, stream] = _.slice(regRes, 1);
+			// let [app, stream] = _.slice(regRes, 1);
+			// console.log(app, stream);
+
+			if (!_.get(stats, [app, stream])) {
+				_.set(stats, [app, stream], {
+					publisher: null,
+					subscribers: []
+				});
+			}
+
+			switch (true) {
+				case session.isPublishing: {
+					_.set(stats, [app, stream, 'publisher'], {
+						app: app,
+						stream: stream,
+						clientId: session.id,
+						connectCreated: session.connectTime,
+						bytes: session.socket.bytesRead,
+						ip: session.socket.remoteAddress,
+						audio: session.audioCodec > 0 ? {
+							codec: session.audioCodecName,
+							profile: session.audioProfileName,
+							samplerate: session.audioSamplerate,
+							channels: session.audioChannels
+						} : null,
+						video: session.videoCodec > 0 ? {
+							codec: session.videoCodecName,
+							width: session.videoWidth,
+							height: session.videoHeight,
+							profile: session.videoProfileName,
+							level: session.videoLevel,
+							fps: session.videoFps
+						} : null,
+					});
+
+					break;
+				}
+				case !!session.playStreamPath: {
+					switch (session.constructor.name) {
+						case 'NodeRtmpSession': {
+							stats[app][stream]['subscribers'].push({
+								app: app,
+								stream: stream,
+								clientId: session.id,
+								connectCreated: session.connectTime,
+								bytes: session.socket.bytesWritten,
+								ip: session.socket.remoteAddress,
+								protocol: 'rtmp'
+							});
+
+							break;
+						}
+						case 'NodeFlvSession': {
+							stats[app][stream]['subscribers'].push({
+								app: app,
+								stream: stream,
+								clientId: session.id,
+								connectCreated: session.connectTime,
+								bytes: session.req.connection.bytesWritten,
+								ip: session.req.connection.remoteAddress,
+								protocol: session.TAG === 'websocket-flv' ? 'ws' : 'http'
+							});
+
+							break;
+						}
+					}
+
+					break;
+				}
+			}
+		}
+	});
+
+	if (publishLive === app && publishStream === stream) {
+		console.log({
+			path: app,
+			name: stream
+		});
+		let body = req.body;
+
+		if (req.body === undefined) {
+			console.log('undefined');
+			body = 'undefined';
+		}
+
+		let response = {
+			apipoint: 'getEncryptedHash',
+			path: app,
+			streamName: stream,
+			body: body
+		};
+		res.json(response);
+	} else {
+		res.json('No publishers');
+	}
+
+}
+
 exports.getStreams = getStreams;
 exports.getStream = getStream;
+exports.getEncryptedHash = getEncryptedHash;

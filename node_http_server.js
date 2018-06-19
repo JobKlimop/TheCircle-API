@@ -10,6 +10,8 @@ const Http = require('http');
 const Https = require('https');
 const WebSocket = require('ws');
 const Express = require('express');
+const bodyParser = require('body-parser');
+
 const NodeCoreUtils = require('./node_core_utils');
 const NodeFlvSession = require('./node_flv_session');
 const HTTP_PORT = 80;
@@ -31,9 +33,17 @@ class NodeHttpServer {
 
     let app = Express();
 
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true}));
+
     app.use(function(req, res, next) {
       res.header("Access-Control-Allow-Origin", '*' );
       res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+      next();
+    });
+
+    app.post('*', (req, res, next) => {
+      // console.log(req.body);
       next();
     });
     
@@ -41,7 +51,6 @@ class NodeHttpServer {
       res.setHeader('Access-Control-Allow-Origin', this.config.http.allow_origin );
       next();
     });
-
 
     app.all('*.flv', (req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', this.config.http.allow_origin );
@@ -57,7 +66,6 @@ class NodeHttpServer {
         this.onConnect(req, res);
       }
     });
-
 
     app.use(Express.static(this.webroot));
     app.use(Express.static(this.mediaroot));
@@ -173,4 +181,4 @@ class NodeHttpServer {
   }
 }
 
-module.exports = NodeHttpServer
+module.exports = NodeHttpServer;

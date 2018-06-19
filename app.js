@@ -39,7 +39,6 @@ const config = {
   },
 };
 
-
 let nms = new NodeMediaServer(config)
 nms.run();
 
