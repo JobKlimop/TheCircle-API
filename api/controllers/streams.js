@@ -1,3 +1,4 @@
+const sha = require('sha256');
 const _ = require('lodash');
 
 function getStreams(req, res, next) {
@@ -215,17 +216,43 @@ function getEncryptedHash(req, res, next) {
 			body = 'undefined';
 		}
 
+		let hash = req.body.hash;
+
 		let response = {
 			apipoint: 'getEncryptedHash',
 			path: app,
 			streamName: stream,
-			body: body
+			hash: hash
 		};
-		res.json(response);
+		let equal = compareHash(hash);
+		if (equal) {
+			console.log('it is equal');
+			response.equal = true;
+			res.status(200).json(response);
+		} else {
+			console.log('it is not equal');
+			response.equal = false;
+			res.status(200).json(response);
+		}
 	} else {
 		res.json('No publishers');
 	}
 
+}
+
+function compareHash(pk_hash) {
+	let test = '123456';
+	let hash = sha(test);
+	let pkHash = sha(pk_hash);
+
+	console.log({Received: hash});
+	console.log({Calculated: pkHash});
+
+	if (hash === pkHash) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 exports.getStreams = getStreams;
