@@ -33,12 +33,13 @@ class NodeHttpServer {
 
     app.use(function(req, res, next) {
       res.header("Access-Control-Allow-Origin", '*' );
-      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
+      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, authorization, Content-Type, Accept");
       next();
     });
     
     app.all(['*.m3u8', '*.ts', '*.mpd', '*.m4s', '*.mp4'], (req, res, next) => {
-      res.setHeader('Access-Control-Allow-Origin', this.config.http.allow_origin );
+      res.setHeader('Access-Control-Allow-Origin', '*' );
       next();
     });
 
