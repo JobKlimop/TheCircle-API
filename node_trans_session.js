@@ -20,7 +20,7 @@ class NodeTransSession extends EventEmitter {
   run() {
     let vc = 'copy';
     let ac = this.conf.args.ac == 10 ? 'copy' : this.conf.ac ? this.conf.ac : 'aac';
-    let inPath = 'rtmp://thecircle-api-stream.herokuapp.com:' + this.conf.port + this.conf.streamPath;
+    let inPath = 'rtmp://localhost:' + this.conf.port + this.conf.streamPath;
     let ouPath = `${this.conf.mediaroot}/${this.conf.app}/${this.conf.stream}`;
     let mapStr = '';
     if (this.conf.mp4) {
