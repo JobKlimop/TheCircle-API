@@ -278,7 +278,7 @@ function getEncryptedHash(req, res, next) {
 
 function getPublisher(streamerName) {
 	return new Promise(function (resolve, reject) {
-		var url = 'http://localhost:3000/api/account/user/' + streamerName;
+		var url = 'https://the-circle-account.herokuapp.com/api/account/user/' + streamerName;
 		request(url, {json: true}, function(error, response, body) {
 			console.log(body);
 			if (error) {

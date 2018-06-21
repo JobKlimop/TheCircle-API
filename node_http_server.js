@@ -42,11 +42,11 @@ class NodeHttpServer {
       next();
     });
 
-	  app.all('*', (req, res, next) => {
-		  res.setHeader('Access-Control-Allow-Origin', '*' );
-		  res.setHeader("Access-Control-Allow-Headers", "Authorization, Origin, X-Requested-With, Content-Type, Accept");
-		  next();
-	  });
+    app.post('*', (req, res, next) => {
+	  // res.setHeader('Access-Control-Allow-Origin', '*' );
+	  // res.setHeader("Access-Control-Allow-Headers", "Authorization, Origin, X-Requested-With, Content-Type, Accept");
+	  next();
+	 });
     
     app.all(['*.m3u8', '*.ts', '*.mpd', '*.m4s', '*.mp4'], (req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', this.config.http.allow_origin );
