@@ -42,10 +42,11 @@ class NodeHttpServer {
       next();
     });
 
-    app.post('*', (req, res, next) => {
-    	console.log({ NODEHTTPSERVER : req.body});
-	  	next();
-	});
+	  app.all('*', (req, res, next) => {
+		  res.setHeader('Access-Control-Allow-Origin', '*' );
+		  res.setHeader("Access-Control-Allow-Headers", "Authorization, Origin, X-Requested-With, Content-Type, Accept");
+		  next();
+	  });
     
     app.all(['*.m3u8', '*.ts', '*.mpd', '*.m4s', '*.mp4'], (req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', this.config.http.allow_origin );
@@ -93,7 +94,7 @@ class NodeHttpServer {
   }
 
   run() {
-    this.httpServer.listen(this.port, '0.0.0.0', () => {
+    this.httpServer.listen(this.port, '0.0.0.0', (e) => {
       Logger.log(`Node Media Http Server started on port: ${this.port}`);
     });
 

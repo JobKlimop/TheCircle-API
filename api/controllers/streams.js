@@ -131,6 +131,17 @@ function getStream(req, res, next) {
 
 function getEncryptedHash(req, res, next) {
 	console.log({'GETTING encrypted hash' : req.body});
+
+	let publisherName = req.params.stream;
+	let publisherPath = req.params.app;
+
+	let response = 	{
+		path: publisherPath,
+		publisher: publisherName,
+	};
+
+	console.log(response);
+
 	res.status(200).json('RECEIVED');
 	//
 	// let stats = {};
