@@ -19,19 +19,19 @@ const config = {
     key: './privatekey.pem',
     cert: './certificate.pem',
   },
-  trans: {
-    ffmpeg: '/usr/local/bin/ffmpeg',
-	  tasks: [
-	    {
-	      app: 'live',
-		  ac: 'aac',
-		  hls: true,
-		  hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
-		  dash: true,
-		  dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
-	    }
-	  ]
-  },
+  // trans: {
+  //   ffmpeg: 'https://immense-shelf-35765.herokuapp.com/',
+	//   tasks: [
+	//     {
+	//       app: 'live',
+	// 	  ac: 'aac',
+	// 	  hls: true,
+	// 	  hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
+	// 	  dash: true,
+	// 	  dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+	//     }
+	//   ]
+  // },
   auth: {
     play: false,
     publish: false,
