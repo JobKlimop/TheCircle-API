@@ -43,9 +43,9 @@ class NodeHttpServer {
     });
 
     app.post('*', (req, res, next) => {
-      // console.log(req.body);
-      next();
-    });
+    	console.log({ NODEHTTPSERVER : req.body});
+	  	next();
+	});
     
     app.all(['*.m3u8', '*.ts', '*.mpd', '*.m4s', '*.mp4'], (req, res, next) => {
       res.setHeader('Access-Control-Allow-Origin', this.config.http.allow_origin );
@@ -66,6 +66,8 @@ class NodeHttpServer {
         this.onConnect(req, res);
       }
     });
+
+
 
     app.use(Express.static(this.webroot));
     app.use(Express.static(this.mediaroot));
@@ -176,6 +178,7 @@ class NodeHttpServer {
 
   onConnect(req, res) {
     let session = new NodeFlvSession(this.config, req, res);
+    console.log({DATA: req});
     session.run();
 
   }
