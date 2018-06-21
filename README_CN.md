@@ -4,29 +4,23 @@
 [![npm](https://img.shields.io/npm/dm/node-media-server.svg)](https://npmjs.org/package/node-media-server)
 [![npm](https://img.shields.io/npm/l/node-media-server.svg)](LICENSE)
 
-![logo](https://www.nodemedia.cn/uploads/site_logo.png)
+一个 Node.js 实现的RTMP/HTTP/WebSocket/HLS/DASH流媒体服务器
 
-A Node.js implementation of RTMP/HTTP-FLV/WS-FLV/HLS/DASH Media Server  
-[中文介绍](https://github.com/illuspas/Node-Media-Server/blob/master/README_CN.md)
-
-**If you like this project you can support me.**  
-<a href="https://www.buymeacoffee.com/illuspas" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/white_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
-
-# Features
- - Cross platform support Windows/Linux/Unix
- - Support H.264/H.265/AAC/MP3/SPEEX/NELLYMOSER
- - Support GOP cache
- - Support remux to LIVE-HTTP-FLV,Support [flv.js](https://github.com/Bilibili/flv.js) playback
- - Support remux to LIVE-WebSocket-FLV,Support [flv.js](https://github.com/Bilibili/flv.js) playback
- - Support remux to HLS/DASH/MP4
- - Support remux to HLS/DASH/MP4 automatic transcoding to aac
- - Support xycdn style authentication
- - Support event callback
- - Support https/wss
- - Support Server Monitor
- - Support Rtsp/Rtmp relay
+# 特性
+ - 跨平台支持 Windows/Linux/Unix
+ - 支持的音视频编码 H.264/H.265/AAC/SPEEX/NELLYMOSER
+ - 支持缓存最近一个关键帧间隔数据，实现RTMP协议秒开
+ - 支持RTMP直播流转LIVE-HTTP-FLV流,支持 [flv.js](https://github.com/Bilibili/flv.js) 播放
+ - 支持RTMP直播流转LIVE-WebSocket-FLV,支持 [flv.js](https://github.com/Bilibili/flv.js) 播放
+ - 支持星域CDN风格的鉴权
+ - 支持事件回调
+ - 支持https/wss加密传输
+ - 支持服务器和流媒体信息统计
+ - 支持RTMP直播流转HLS,DASH直播流
+ - 支持RTMP直播流录制为MP4文件并开启faststart
+ - 支持RTMP/RTSP中继
  
-# Usage 
+# 用法 
 ```bash
 npm install node-media-server
 ```
@@ -54,31 +48,31 @@ nms.run();
 ```
 
 # Todo 
-- [x] support record stream 
-- [x] support transcode
-- [ ] support cluster
-- [x] support low latency hls
-- [x] server and streams status
-- [ ] server monitor frontend
-- [x] on_connect/on_publish/on_play/on_done event callback
-- [ ] multi resolution transcoding 
-- [ ] hardware acceleration transcoding. 
-- [x] rtmp relay
-- [ ] admin panel
+- [x] 支持录制为MP4回放
+- [x] 支持实时转码
+- [ ] 支持多核模式
+- [x] 支持低延迟HLS/DASH
+- [x] 支持服务器和流媒体信息统计
+- [ ] 服务器和流媒体信息统计的前端样式
+- [x] on_connect/on_publish/on_play/on_done 事件回调
+- [ ] 多分辨率转码
+- [ ] 硬件加速转码
+- [X] RTMP 中继
+- [ ] 管理面板
 
-# Publishing live streams
-## From FFmpeg
->If you have a video file with H.264 video and AAC audio:
+# 直播发布
+## 使用 FFmpeg 推流
+如果你有一个音视频编码为H.264+AAC的视频文件转为直播:
 ```bash
 ffmpeg -re -i INPUT_FILE_NAME -c copy -f flv rtmp://localhost/live/STREAM_NAME
 ```
 
-Or if you have a video file that is encoded in other audio/video format:
+或者有个其他编码格式，需要转为h.264+AAC的编码再转直播:
 ```bash
 ffmpeg -re -i INPUT_FILE_NAME -c:v libx264 -preset superfast -tune zerolatency -c:a aac -ar 44100 -f flv rtmp://localhost/live/STREAM_NAME
 ```
 
-## From OBS
+## 使用 OBS 推流
 >Settings -> Stream
 
 Stream Type : Custom Streaming Server
@@ -87,33 +81,18 @@ URL : rtmp://localhost/live
 
 Stream key : STREAM_NAME
 
-# Accessing the live stream
-## RTMP 
-```
-rtmp://localhost/live/STREAM_NAME
-```
-
-## http-flv
-```
-http://localhost:8000/live/STREAM_NAME.flv
+# 播放直播流
+## RTMP 流格式 
+```bash
+ffplay rtmp://localhost/live/STREAM_NAME
 ```
 
-## websocket-flv
-```
-ws://localhost:8000/live/STREAM_NAME.flv
-```
-
-## HLS
-```
-http://localhost:8000/live/STREAM_NAME/index.m3u8
+## http-flv 流格式
+```bash
+ffplay http://localhost:8000/live/STREAM_NAME.flv
 ```
 
-## DASH
-```
-http://localhost:8000/live/STREAM_NAME/index.mpd
-```
-
-## via flv.js over http-flv
+## 使用 flv.js 播放 http-flv 流格式
 
 ```html
 <script src="https://cdn.bootcss.com/flv.js/1.4.0/flv.min.js"></script>
@@ -132,10 +111,10 @@ http://localhost:8000/live/STREAM_NAME/index.mpd
 </script>
 ```
 
-## via flv.js over websocket-flv
+## 使用 flv.js 播放 websocket-flv 流格式
 
 ```html
-<script src="https://cdn.bootcss.com/flv.js/1.4.0/flv.min.js"></script>
+<script src="https://cdn.bootcss.com/flv.js/1.3.3/flv.min.js"></script>
 <video id="videoElement"></video>
 <script>
     if (flvjs.isSupported()) {
@@ -151,53 +130,16 @@ http://localhost:8000/live/STREAM_NAME/index.mpd
 </script>
 ```
 
-# Logging
-## Modify the logging type
-It is now possible to modify the logging type which determines which console outputs are shown.
-
-There are a total of 4 possible options:
-- 0 - Don't log anything
-- 1 - Log errors
-- 2 - Log errors and generic info
-- 3 - Log everything (debug)
-
-Modifying the logging type is easy - just add a new value `logType` in the config and set it to a value between 0 and 4.
-By default, this is set to show errors and generic info internally (setting 2).
-
-```js
-const NodeMediaServer = require('node-media-server');
-
-const config = {
-  logType: 3,
-
-  rtmp: {
-    port: 1935,
-    chunk_size: 60000,
-    gop_cache: true,
-    ping: 60,
-    ping_timeout: 30
-  },
-  http: {
-    port: 8000,
-    allow_origin: '*'
-  }
-};
-
-var nms = new NodeMediaServer(config)
-nms.run();
-
-```
-
-# Authentication
-## Encryption URL consists of:
+# 鉴权验证
+## 加密后的 URL 形式:
 > rtmp://hostname:port/appname/stream?sign=expires-HashValue  
 > http://hostname:port/appname/stream.flv?sign=expires-HashValue  
 > ws://hostname:port/appname/stream.flv?sign=expires-HashValue  
 
-1.Publish or play address:
+1.原始推流或播放地址:
 >rtmp://192.168.0.10/live/stream
 
-2.Config set auth->secret: 'nodemedia2017privatekey'
+2.配置验证秘钥为: 'nodemedia2017privatekey'，同时打开播放和发布的鉴权开关
 ```js
 const config = {
   rtmp: {
@@ -218,24 +160,26 @@ const config = {
   }
 }
 ```
-3.expiration time: 2017/8/23 11:25:21 ,The calculated expiration timestamp is
+
+3.请求过期时间为: 2017/8/23 11:25:21 ,则请求过期时间戳为:
 >1503458721
 
-4.The combination HashValue is:
+4.md5计算结合“完整流地址-失效时间-密钥”的字符串:
 >HashValue = md5("/live/stream-1503458721-nodemedia2017privatekey”)  
 >HashValue = 80c1d1ad2e0c2ab63eebb50eed64201a
 
-5.Final request address
+5.最终请求地址为
 > rtmp://192.168.0.10/live/stream?sign=1503458721-80c1d1ad2e0c2ab63eebb50eed64201a  
-> The 'sign' keyword can not be modified
+> 注意：'sign' 关键字不能修改为其他的
 
-# H.265 over RTMP
-H.265 does not appear in Adobe's official specification. Id 12 is the standard for most cloud services in China.  
-Publish or Transcode: [ffmpeg-hw-win32](#ffmpeg-hw-win32)  
-Play:[NodeMediaClient-Android](#android) and [NodeMediaClient-iOS](#ios)  
-Pure JavaScrip live stream player: [NodePlayer.js](https://github.com/illuspas/NodePlayer.js)
 
-# Event callback
+# RTMP协议传输H.265视频
+H.265并没有在Adobe的官方规范里实现，这里使用id 12作为标识，也是国内绝大多数云服务商使用的id号  
+PC转码推流: [ffmpeg-hw-win32](#ffmpeg-hw-win32)  
+手机播放:[NodeMediaClient-Android](#android) and [NodeMediaClient-iOS](#ios)  
+纯JavaScrip 直播播放器: [NodePlayer.js](https://github.com/illuspas/NodePlayer.js)
+
+# 事件回调
 ```js
 ......
 nms.run();
@@ -281,16 +225,17 @@ nms.on('donePlay', (id, StreamPath, args) => {
   console.log('[NodeEvent on donePlay]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
 });
 ```
-# Https/Wss
 
-## Generate certificate
+# Https/Wss 视频加密传输
+
+## 生成证书
 ```bash
 openssl genrsa -out privatekey.pem 1024
 openssl req -new -key privatekey.pem -out certrequest.csr 
 openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
 ```
 
-## Config https
+## 配置 https支持
 ```js
 const NodeMediaServer = require('node-media-server');
 
@@ -317,14 +262,14 @@ const config = {
 var nms = new NodeMediaServer(config)
 nms.run();
 ```
-## Accessing
+## 播放加密传输视频
 ```
 https://localhost:8443/live/STREAM_NAME.flv
 wss://localhost:8443/live/STREAM_NAME.flv
 ```
->In the browser environment, Self-signed certificates need to be added with trust before they can be accessed.
+>Web浏览器播放自签名的证书需先添加信任才能访问
 
-# Server stats
+# 服务器信息统计
 http://localhost:8000/api/server
 
 ```json
@@ -369,7 +314,7 @@ http://localhost:8000/api/server
 }
 ```
 
-# Streams stats
+# 流信息统计
 http://localhost:8000/api/streams
 
 ```json
@@ -446,7 +391,9 @@ http://localhost:8000/api/streams
 }
 ```
 
-# Remux to HLS/DASH live stream
+
+# 转 HLS/DASH 直播流
+
 ```js
 const NodeMediaServer = require('node-media-server');
 
@@ -482,7 +429,8 @@ var nms = new NodeMediaServer(config)
 nms.run();
 ```
 
-# Record to MP4
+# 直播录制为MP4文件
+
 ```JS
 const NodeMediaServer = require('node-media-server');
 
@@ -516,12 +464,12 @@ var nms = new NodeMediaServer(config)
 nms.run();
 ```
 
-# Rtsp/Rtmp Relay
-NodeMediaServer implement RTSP and RTMP relay with ffmpeg.
 
-## Static pull
-The static pull mode is executed at service startup and reconnect after failure.
-It could be a live stream or a file. In theory, it is not limited to RTSP or RTMP protocol.
+# Rtsp/Rtmp 中继
+NodeMediaServer 使用ffmpeg实现RTMP/RTSP的中继服务。
+
+## 静态拉流
+静态拉流模式在服务启动时执行，当发生错误时自动重连。可以是一个直播流，也可以是一个本地文件。理论上并不限制是RTSP或RTMP协议
 
 ```
 relay: {
@@ -547,10 +495,8 @@ relay: {
 }
 ```
 
-## Dynamic pull 
-When the local server receives a play request.
-If the stream does not exist, pull the stream from the configured edge server to local.
-When the stream is not played by the client, it automatically disconnects.
+## 动态拉流
+当本地服务器收到一个播放请求，如果这个流不存在，则从配置的边缘服务器拉取这个流。当没有客户端播放这个流时，自动断开。
 
 ```
 relay: {
@@ -565,9 +511,8 @@ relay: {
 }
 ```
 
-## Dynamic push
-When the local server receives a publish request.
-Automatically push the stream to the edge server.
+### 动态推流
+当本地服务器收到一个发布请求，自动将这个流推送到边缘服务器。
 
 ```
 relay: {
@@ -582,14 +527,14 @@ relay: {
 }
 ```
 
-# Thanks
+# 感谢
 RTSP, RTMP, and HTTP server implementation in Node.js  
 https://github.com/iizukanao/node-rtsp-rtmp-server
 
 Node.JS module that provides an API for encoding and decoding of AMF0 and AMF3 protocols  
 https://github.com/delian/node-amfutils
 
-# Publisher and Player App/SDK
+# 直播推流与播放SDK与APP
 
 ## Android Livestream App
 https://play.google.com/store/apps/details?id=cn.nodemedia.qlive
